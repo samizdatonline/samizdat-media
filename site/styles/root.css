@@ -1,0 +1,125 @@
+:root {
+    --bg-color:#fffffe;
+    --bg-color-d: #e3e2ea;
+    --bg-color-quiet:#bebdca;
+    --bg-color-quiet-d:#f3f2fa;
+    --text-color:#2c3e50;
+    --text-color-d:#2c3e50;
+    --text-color-quiet:#2c3e50aa;
+    --text-color-quiet-d:#2c3e50aa;
+    --neutral:#919090;
+    --page-border:#91909050;
+    --action-color:#82b3cb;
+    --action-color-hilite:#5ab8e7;
+    --spacer:12px;
+    --spacer2:24px;
+    --spacer3:36px;
+    --spacerhalf:6px;
+    --spacerthird:4px;
+    --spacerquarter:3px;
+    --spacerneg:-12px;
+    --item-super:#7777DD80;
+    --item-elevated:#77DD7780;
+    --item-normal:#DDDD7780;
+    --item-bad:#DD777780;
+    --status-error:red;
+    --status-warning:yellow;
+    --status-warning:green;
+}
+
+BODY {
+    overflow:hidden;
+    color:var(--text-color-d);
+    background-color:var(--bg-color-d);
+    font-family:DM Sans,sans-serif
+}
+H1 {
+    margin-top:0;
+    font-size: 32px;
+    letter-spacing: -.5px;
+}
+H2 {
+    font-size: 32px;
+}
+BUTTON {
+    background-color:var(--action-color);
+    border:0;
+    border-radius:50px;
+    cursor:pointer;
+    color:var(--text-color-d);
+    white-space: nowrap;
+    transition: .25s;
+    text-transform:uppercase;
+    font-weight: 500;
+    padding: 3px 10px;
+    height:32px;
+}
+BUTTON:hover {
+    background-color:var(--action-color-hilite);
+}
+.page-collection-container {
+    position:absolute;
+    left:0;
+    top:0;
+    right:0;
+    bottom:0;
+    display:flex;
+    flex-direction: column;
+    flex:1 1;
+}
+.page-item-list {
+    flex:60% 1
+}
+.page-item-properties {
+    flex: 40% 250px;
+    display: flex;
+    flex-direction: column;
+    width: calc(100% - 12px);
+    margin:0 6px;
+}
+
+.item-placeholder-text {
+    font-style:italic;
+    color:var(--text-color-quiet);
+}
+.page-item-options {
+    position:relative;
+    border:1px solid var(--text-color-quiet);
+    padding:var(--spacer);
+    margin:var(--spacer) 0;
+}
+.page-item-options .box-title {
+    position:absolute;
+    top:-5px;
+    left:5px;
+    margin-top:-5px;
+    color:var(--text-color-quiet);
+    background-color:var(--bg-color-quiet);
+}
+.page-full {
+    padding:var(--spacer);
+    overflow-y:auto;
+}
+::selection {
+    background-color: var(--action-color-hilite);
+    color: #fff;
+}
+INPUT, SELECT {
+    font-size:1.1em;
+    padding:4px;
+    border:1px solid var(--text-color);
+    border-radius:3px;
+    color:var(--text-color);
+    min-width:150px;
+}
+INPUT[type=number] {
+    width:100px;
+}
+.form-element-title {
+    font-size:0.8em;
+    font-weight:bold;
+}
+IFRAME {
+    border:0;
+    width:100%;
+}

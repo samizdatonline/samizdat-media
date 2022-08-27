@@ -1,0 +1,15 @@
+[Unit]
+Description=Tweezer
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/tweezer/
+ExecStart=/usr/bin/npm start &
+Restart=always
+StandardOutput=journal
+StandardError=journal
+User=ubuntu
+Group=ubuntu
+
+[Install]
+WantedBy=multi-user.target
