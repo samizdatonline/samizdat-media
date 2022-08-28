@@ -6,6 +6,7 @@ import cors from 'cors';
 import CommonMixin from '../metric-im/common-mixin/index.mjs';
 import Profile from './profile.mjs';
 import Componentry from '../metric-im/componentry/index.mjs';
+import StorJ from './server/StorJ.mjs';
 import path from "path";
 import {fileURLToPath} from "url";
 const root = path.dirname(fileURLToPath(import.meta.url));
@@ -33,7 +34,7 @@ let main = async function() {
     app.use('/',express.static(root+"/site"));
     // add component server
     let componentry = new Componentry(app,await Profile());
-    await componentry.init(CommonMixin);
+    await componentry.init(CommonMixin,StorJ);
 
     app.get('/v/:video',async (req,res)=>{
         let body = {_origin:{host:req.hostname,ip:req.headers['x-forwarded-for'],ua:req.get('User-Agent')}}

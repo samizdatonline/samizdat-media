@@ -10,7 +10,7 @@ export default async function Profile() {
             let result = await client.getSecretValue({SecretId: secretName}).promise();
             secretData = JSON.parse(result.SecretString);
         }
-        return Object.assign(secretData,{PROFILE:name});
+        return Object.assign({STORJ:secretData},{PROFILE:name});
     } catch(e) {
         throw new Error('Error accessing secrets: '+e.code || e);
     }
