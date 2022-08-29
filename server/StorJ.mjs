@@ -54,6 +54,7 @@ export default class StorJ {
                 let id = this.connector.idForge.datedId();
                 let upload = await this.project.uploadObject(this.bucket,id,opts);
                 let result = await upload.write(req.files.file.data,req.files.file.size);
+                await upload.commit();
                 let info = await upload.info();
                 res.json({info:info});
             } catch(e) {

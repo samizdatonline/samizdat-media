@@ -18,7 +18,7 @@ export default class Home extends Component {
         video.setAttribute('height','100%');
         video.setAttribute('width','auto');
         video.setAttribute("controls","true");
-        video.src = "https://link.storjshare.io/s/jxge7mxollo756nqac72hmykbiaq/video/PXL_20210527_230723821.mp4?wrap=0"
+        video.src = "https://link.storjshare.io/s/jxge7mxollo756nqac72hmykbiaq/video/l7eoeqmnociczkco?wrap=0"
         this.element.append(video);
         // ad box
         this.adBox = this.div('ad-box');
