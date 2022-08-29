@@ -6,6 +6,7 @@
  */
 
 import UplinkNodejs from 'uplink-nodejs';
+import fileUpload from 'express-fileupload';
 import express from 'express';
 
 export default class StorJ {
@@ -24,6 +25,7 @@ export default class StorJ {
     }
     routes() {
         let router = express.Router();
+        router.use(fileUpload({limit:200*1024*1024}));
         router.get("/list",async (req,res)=>{
             try {
                 let list = await this.project.listObjects(this.bucket,null);
@@ -38,9 +40,9 @@ export default class StorJ {
             try {
                 let opts = new UplinkNodejs.DownloadOptions(-1);
                 let download = await this.project.downloadObject(this.bucket,req.params.id,opts);
-                let buffer = new Buffer.alloc(10000);
-                let bytes = await download.read(buffer,buffer.length);
-                res.send(bytes);
+                let info = await download.info();
+                let stat = await this.project.statObject(this.bucket,req.params.id);
+                res.json({info:info,stat:stat});
             } catch(e) {
                 console.error(e);
                 res.status(500).send();
@@ -48,7 +50,12 @@ export default class StorJ {
         });
         router.put("/put",async(req,res) => {
             try {
-                res.json(req.body);
+                let opts = new UplinkNodejs.UploadOptions(0);
+                let id = this.connector.idForge.datedId();
+                let upload = await this.project.uploadObject(this.bucket,id,opts);
+                let result = await upload.write(req.files.file.data,req.files.file.size);
+                let info = await upload.info();
+                res.json({info:info});
             } catch(e) {
                 console.error(e);
                 res.status(500).send();

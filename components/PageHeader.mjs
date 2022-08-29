@@ -6,6 +6,6 @@ export default class PageHeader extends Component {
     }
     async render(element) {
         await super.render(element);
-        this.element.innerHTML = `<h1>tweezer</h1><h2>What's on your mind, in ONE word.</h2>`
+        this.element.innerHTML = `<h1>samizdat media</h1><h2>share your reality</h2>`
     }
 }

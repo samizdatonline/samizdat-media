@@ -24,29 +24,18 @@ export default class Main extends Component {
     }
     async render(element) {
         await super.render(element);
-        await this.getKey();
         this.header = this.new(PageHeader,{page:this.page,context:this.context});
         await this.header.render(this.element);
         this.body = this.new(PageBody,{page:this.page,context:this.context});
         await this.body.render(this.element);
         await this.new(PageMenu,{context:this.context,menu:[
             {title:'Home',target:'/#Home',icon:'home'},
-            {title:'explore',target:'/#Explore',icon:'globe'},
+            {title:'Upload',target:'/#Upload',icon:'upload'},
             {title:'About',target:'/#About',icon:'help'}
         ]}).render(this.element);
         this.popup = this.new(Popup,{context:this.context});
         await this.popup.render(this.element);
         this.toast = this.new(Toast,{context:this.context});
         await this.toast.render(this.element);
-    }
-    async getKey() {
-        try {
-            if (!this.key) {
-                let result = await fetch('/key');
-                this.context.key = await result.text();
-            }
-        } catch(e) {
-            return "";
-        }
     }
 }

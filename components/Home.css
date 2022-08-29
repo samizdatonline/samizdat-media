@@ -64,3 +64,8 @@ iframe {
     min-width:50%;
     margin-bottom:var(--spacer2);
 }
+.video-box {
+    flex:0 0;
+    height:80%;
+    justify-self: center;
+}

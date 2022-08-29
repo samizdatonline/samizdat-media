@@ -1,0 +1,8 @@
+. {
+    flex:0 0;
+    border:1px solid var(--bg-color);
+    margin: var(--spacer);
+}
+input[type=file] {
+    height:30vw;
+}
