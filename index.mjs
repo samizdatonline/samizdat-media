@@ -38,7 +38,7 @@ let main = async function() {
 
     app.get('/v/:video',async (req,res)=>{
         let body = {_origin:{host:req.hostname,ip:req.headers['x-forwarded-for'],ua:req.get('User-Agent')}}
-        res.send('hello '+req.params.video);
+
         // body.word = req.params.word;
         // try {
         //     await axios.put(`${metricHost}/ping/silent/word`,body,header);
