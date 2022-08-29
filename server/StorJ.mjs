@@ -51,7 +51,8 @@ export default class StorJ {
         router.put("/put",async(req,res) => {
             try {
                 let opts = new UplinkNodejs.UploadOptions(0);
-                let id = this.connector.idForge.datedId();
+                let ext = req.files.file.mimetype.split('/')[1]
+                let id = this.connector.idForge.datedId()+"."+ext;
                 let upload = await this.project.uploadObject(this.bucket,id,opts);
                 let result = await upload.write(req.files.file.data,req.files.file.size);
                 await upload.commit();

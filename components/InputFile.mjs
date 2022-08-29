@@ -12,6 +12,10 @@ export default class InputFile extends Component {
         }
         this.input = document.createElement("input");
         this.input.type = "file"
+        if (this.props.accept) {
+            let val = Array.isArray(this.props.accept)?this.props.accept.join(','):this.props.accept;
+            this.input.setAttribute('accept',val);
+        }
         this.element.append(this.input);
     }
     get value() {
