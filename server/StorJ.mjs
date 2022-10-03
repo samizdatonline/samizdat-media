@@ -38,7 +38,10 @@ export default class StorJ {
                 res.status(500).send();
             }
         });
-        router.get("/get/:id",async (req,res)=>{
+        /**
+         * This is test code that streams an mp4 from the server disk
+         */
+        router.get("/fileget/:id",async (req,res)=>{
             try {
                 const range = req.headers.range;
                 if (!range) {
@@ -71,48 +74,43 @@ export default class StorJ {
 
                 // Stream the video chunk to the client
                 videoStream.pipe(res);
-
-                // let range = req.headers.range;
-                // let opts = new UplinkNodejs.DownloadOptions(0,-1);
-                // let download = await this.project.downloadObject(this.bucket,req.params.id,opts);
-                // let info = await download.info();
-                // let videoSize = info.system.content_length;
-                //
-                // const CHUNK_SIZE = 10 ** 6;
-                // const start = Number(range.replace(/\D/g, ""));
-                // const end = Math.min(start + CHUNK_SIZE, videoSize - 1);
-                // const contentLength = end - start + 1;
-                // const headers = {
-                //     "Content-Range": `bytes ${start}-${end}/${videoSize}`,
-                //     "Accept-Ranges": "bytes",
-                //     "Content-Length": contentLength,
-                //     "Content-Type": "video/mp4",
-                // };
-                // res.writeHead(206, headers);
-                //
-                // let buffer = new Buffer.alloc(info.system.content_length);
-                // await download.read(buffer,buffer.length);
-                // let stream = Readable.from(buffer);
-                // stream.pipe(res);
-
             } catch(e) {
                 console.error(e);
                 res.status(500).send();
             }
-            // try {
-            //     const response = await axios({
-            //         method: 'GET',
-            //         url: fileUrl,
-            //         responseType: 'stream',
-            //     });
-            //
-            //     const w = response.data.pipe(fs.createWriteStream(localFilePath));
-            //     w.on('finish', () => {
-            //         console.log('Successfully downloaded file!');
-            //     });
-            // } catch (err) {
-            //     throw new Error(err);
-            // }
+        });
+        /**
+         * This is intended to stream a file from the storj network to the browser as
+         * it is being downloaded. But it doesn't work.
+         */
+        router.get("/get/:id",async (req,res)=>{
+            try {
+                let range = req.headers.range;
+                let opts = new UplinkNodejs.DownloadOptions(0,-1);
+                let download = await this.project.downloadObject(this.bucket,req.params.id,opts);
+                let info = await download.info();
+                let videoSize = info.system.content_length;
+
+                const CHUNK_SIZE = 10 ** 6;
+                const start = Number(range.replace(/\D/g, ""));
+                const end = Math.min(start + CHUNK_SIZE, videoSize - 1);
+                const contentLength = end - start + 1;
+                const headers = {
+                    "Content-Range": `bytes ${start}-${end}/${videoSize}`,
+                    "Accept-Ranges": "bytes",
+                    "Content-Length": contentLength,
+                    "Content-Type": "video/mp4",
+                };
+                res.writeHead(206, headers);
+
+                let buffer = new Buffer.alloc(info.system.content_length);
+                await download.read(buffer,buffer.length);
+                let stream = Readable.from(buffer);
+                stream.pipe(res);
+            } catch(e) {
+                console.error(e);
+                res.status(500).send();
+            }
         });
         router.put("/put",async(req,res) => {
             try {
