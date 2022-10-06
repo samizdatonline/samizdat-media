@@ -87,29 +87,24 @@ export default class StorJ {
 
                 let start = 0;
                 let end = -1;
-
+                let opts = new UplinkNodejs.DownloadOptions(start, end);
+                console.log(range)
                 if (range) {
                     let [start, end] = range.replace(/bytes=/, "").split("-");
                     start = parseInt(start, 10);
-                    end = end ? parseInt(end, 10) : size - 1
-                    if (!isNaN(start) && !isNaN(end)) {
-                        start = start;
-                        end = size - 1;
-                    }
-                    if (!isNaN(start) && !isNaN(end)) {
-                        start = size - end;
-                        end = size - 1;
-                    }
+                    end = end ? parseInt(end, 10) : -1
                     opts.offset = start;
-                    opts.length = end - start + 1;
+                    opts.length = end - start;
+                }
+                if (start == 0 && end == -1) {
+                    range = null;
                 }
 
-                let opts = new UplinkNodejs.DownloadOptions(start, end);
                 let download = await this.project.downloadObject(this.bucket, req.params.id, opts);
                 let info = await download.info();
                 let objectSize = info.system.content_length;
                 const BUFFER_SIZE = 8000;
-                let buffer = Buffer.alloc(BUFFER_SIZE);
+
 
                 if (range) {
                     const headers = {
@@ -133,9 +128,9 @@ export default class StorJ {
                 let totalRead = 0;
                 while (loop) {
                     // Reading data from storj V3 network
+                    let buffer = Buffer.alloc(BUFFER_SIZE);
                     await download.read(buffer, buffer.length
                     ).then(async (bytesread) => {
-                        // console.log("read " + (totalRead / objectSize * 100).toFixed(2) + "%");
                         await res.write(buffer.subarray(0, bytesread.bytes_read))
                         totalRead += bytesread.bytes_read;
                         if (totalRead >= objectSize) {
