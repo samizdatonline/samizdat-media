@@ -9,7 +9,7 @@ import UplinkNodejs from 'uplink-nodejs';
 import fileUpload from 'express-fileupload';
 import express from 'express';
 import fs from 'fs';
-import {Readable} from 'stream';
+import { Readable } from 'stream';
 
 export default class StorJ {
     constructor(connector) {
@@ -19,21 +19,19 @@ export default class StorJ {
     static async mint(connector) {
         let sj = new StorJ(connector);
         let libUplink = new UplinkNodejs.Uplink();
-        let access = await libUplink.requestAccessWithPassphrase(
-            connector.profile.STORJ.SATELLITE_URL, connector.profile.STORJ.APIKEY, connector.profile.STORJ.PASSPHRASE
-        );
+        let access = await libUplink.parseAccess(process.env.ACCESS);
         sj.project = await access.openProject();
         return sj;
     }
     routes() {
         let router = express.Router();
-        router.use(fileUpload({limit:200*1024*1024}));
-        router.get("/list",async (req,res)=>{
+        router.use(fileUpload({ limit: 200 * 1024 * 1024 }));
+        router.get("/list", async (req, res) => {
             try {
-                let list = await this.project.listObjects(this.bucket,null);
-                let result = Object.values(list).map(val=>val.key);
+                let list = await this.project.listObjects(this.bucket, null);
+                let result = Object.values(list).map(val => val.key);
                 res.json(result);
-            } catch(e) {
+            } catch (e) {
                 console.error(e);
                 res.status(500).send();
             }
@@ -41,7 +39,7 @@ export default class StorJ {
         /**
          * This is test code that streams an mp4 from the server disk
          */
-        router.get("/fileget/:id",async (req,res)=>{
+        router.get("/fileget/:id", async (req, res) => {
             try {
                 const range = req.headers.range;
                 if (!range) {
@@ -74,7 +72,7 @@ export default class StorJ {
 
                 // Stream the video chunk to the client
                 videoStream.pipe(res);
-            } catch(e) {
+            } catch (e) {
                 console.error(e);
                 res.status(500).send();
             }
@@ -83,46 +81,86 @@ export default class StorJ {
          * This is intended to stream a file from the storj network to the browser as
          * it is being downloaded. But it doesn't work.
          */
-        router.get("/get/:id",async (req,res)=>{
+        router.get("/get/:id", async (req, res) => {
             try {
                 let range = req.headers.range;
-                let opts = new UplinkNodejs.DownloadOptions(0,-1);
-                let download = await this.project.downloadObject(this.bucket,req.params.id,opts);
+
+                let start = 0;
+                let end = -1;
+                let opts = new UplinkNodejs.DownloadOptions(start, end);
+                console.log(range)
+                if (range) {
+                    let [start, end] = range.replace(/bytes=/, "").split("-");
+                    start = parseInt(start, 10);
+                    end = end ? parseInt(end, 10) : -1
+                    opts.offset = start;
+                    opts.length = end - start;
+                }
+                if (start == 0 && end == -1) {
+                    range = null;
+                }
+
+                let download = await this.project.downloadObject(this.bucket, req.params.id, opts);
                 let info = await download.info();
-                let videoSize = info.system.content_length;
+                let objectSize = info.system.content_length;
+                const BUFFER_SIZE = 8000;
 
-                const CHUNK_SIZE = 10 ** 6;
-                const start = Number(range.replace(/\D/g, ""));
-                const end = Math.min(start + CHUNK_SIZE, videoSize - 1);
-                const contentLength = end - start + 1;
-                const headers = {
-                    "Content-Range": `bytes ${start}-${end}/${videoSize}`,
-                    "Accept-Ranges": "bytes",
-                    "Content-Length": contentLength,
-                    "Content-Type": "video/mp4",
-                };
-                res.writeHead(206, headers);
 
-                let buffer = new Buffer.alloc(info.system.content_length);
-                await download.read(buffer,buffer.length);
-                let stream = Readable.from(buffer);
-                stream.pipe(res);
-            } catch(e) {
+                if (range) {
+                    const headers = {
+                        "Content-Range": `bytes ${start}-${end}/${objectSize}`,
+                        "Accept-Ranges": "bytes",
+                        "Content-Length": opts.length,
+                        "Content-Type": "video/mp4",
+                    };
+                    console.log(headers);
+                    res.writeHead(206, headers);
+                } else {
+                    const headers = {
+                        "Content-Length": objectSize,
+                        "Content-Type": "video/mp4",
+                    };
+                    console.log(headers);
+                    res.writeHead(200, headers);
+                }
+
+                let loop = true;
+                let totalRead = 0;
+                while (loop) {
+                    // Reading data from storj V3 network
+                    let buffer = Buffer.alloc(BUFFER_SIZE);
+                    await download.read(buffer, buffer.length
+                    ).then(async (bytesread) => {
+                        await res.write(buffer.subarray(0, bytesread.bytes_read))
+                        totalRead += bytesread.bytes_read;
+                        if (totalRead >= objectSize) {
+                            loop = false;
+                        }
+                    }).catch((err) => {
+                        console.log("Failed to read data from storj V3 network ");
+                        console.log(err);
+                        loop = false;
+                    });
+                }
+                console.log("totalRead " + totalRead);
+
+            } catch (e) {
                 console.error(e);
                 res.status(500).send();
             }
         });
-        router.put("/put",async(req,res) => {
+
+        router.put("/put", async (req, res) => {
             try {
                 let opts = new UplinkNodejs.UploadOptions(0);
                 let ext = req.files.file.mimetype.split('/')[1]
-                let id = this.connector.idForge.datedId()+"."+ext;
-                let upload = await this.project.uploadObject(this.bucket,id,opts);
-                let result = await upload.write(req.files.file.data,req.files.file.size);
+                let id = this.connector.idForge.datedId() + "." + ext;
+                let upload = await this.project.uploadObject(this.bucket, id, opts);
+                let result = await upload.write(req.files.file.data, req.files.file.size);
                 await upload.commit();
                 let info = await upload.info();
-                res.json({info:info});
-            } catch(e) {
+                res.json({ info: info });
+            } catch (e) {
                 console.error(e);
                 res.status(500).send();
             }
