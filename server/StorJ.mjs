@@ -19,7 +19,10 @@ export default class StorJ {
     static async mint(connector) {
         let sj = new StorJ(connector);
         let libUplink = new UplinkNodejs.Uplink();
-        let access = await libUplink.parseAccess(process.env.ACCESS);
+        let access = await libUplink.requestAccessWithPassphrase(
+          connector.profile.STORJ.SATELLITE_URL, connector.profile.STORJ.APIKEY, connector.profile.STORJ.PASSPHRASE
+        );
+        // let access = await libUplink.parseAccess(process.env.ACCESS);
         sj.project = await access.openProject();
         return sj;
     }
