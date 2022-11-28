@@ -13,9 +13,6 @@ const root = path.dirname(fileURLToPath(import.meta.url));
 import axios from 'axios';
 
 let main = async function() {
-    const metricHost = process.env.METRIC_HOST||'https://metric.im';
-    const header = {headers:{authorization:"bearer "+process.env.METRIC_KEY}};
-
     let app = express();
     app.__dirname = root;
     app.use(morgan('dev'));
@@ -34,7 +31,7 @@ let main = async function() {
     app.use('/',express.static(root+"/site"));
     // add component server
     let componentry = new Componentry(app,await Profile());
-    await componentry.init(CommonMixin,StorJ);
+    await componentry.init(CommonMixin,StorJ,ApplicationModule);
 
     app.get('/v/:video',async (req,res)=>{
         let body = {_origin:{host:req.hostname,ip:req.headers['x-forwarded-for'],ua:req.get('User-Agent')}}
@@ -54,6 +51,12 @@ let main = async function() {
     server.on('error', console.error);
     server.on('listening',()=>console.log("Listening on port "+server.address().port));
 }();
+
+class ApplicationModule extends Componentry.Module {
+    constructor(connector) {
+        super(connector,import.meta.url);
+    }
+}
 
 process.on('SIGINT', function() {
     console.log("Shutting down");

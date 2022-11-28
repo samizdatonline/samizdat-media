@@ -13,16 +13,14 @@ This project uses [StorJ](https://storj.io) as the hosting environment. See [ser
 >NOTE: This project is under development and not yet fully functional
 
 ## Setup
-This project relies on common modules from metric-im that are not yet posted on npmjs. Instead,
-clone the following repositories into a folder named `/metric-im` as a sister to `samizdat-media`.
-
-* https://github.com/metric-im/componentry
-* https://github.com/metric-im/common-mixin
-
-```
-/workspace/samizdat-media
-/workspace/metric-im/componentry
-/workspace/metric-im/common-mixin
+Storj requires **go**. See https://go.dev/doc/install. Download https://go.dev/dl/go1.19.3.linux-amd64.tar.gz, then
+```bash
+sudo su
+rm -rf /usr/local/go && tar -C /usr/local -xzf go1.19.3.linux-amd64.tar.gz
+exit
+cd /opt/samizdat-media # or wherever
+export PATH=$PATH:/usr/local/go/bin
+npm install uplink-nodejs 
 ```
 
 ### Environment Variables
