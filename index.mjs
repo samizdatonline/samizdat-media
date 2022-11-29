@@ -47,7 +47,7 @@ let main = async function() {
     })
 
     let server = http.createServer(app);
-    server.listen(process.env.PORT || 3000);
+    server.listen(process.env.PORT || 3900);
     server.on('error', console.error);
     server.on('listening',()=>console.log("Listening on port "+server.address().port));
 }();
