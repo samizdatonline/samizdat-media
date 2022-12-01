@@ -22,6 +22,11 @@ cd /opt/samizdat-media # or wherever
 export PATH=$PATH:/usr/local/go/bin
 npm install uplink-nodejs 
 ```
+You may also need to install gyp and g++
+```bash
+sudo npm install -g node-gyp
+sudo apt-get install g++
+```
 
 ### Environment Variables
 
