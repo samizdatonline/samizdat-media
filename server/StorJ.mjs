@@ -9,6 +9,7 @@ import UplinkNodejs from 'uplink-nodejs';
 import fileUpload from 'express-fileupload';
 import express from 'express';
 import fs from 'fs';
+import axios from 'axios';
 import { Readable } from 'stream';
 
 export default class StorJ {
@@ -32,8 +33,10 @@ export default class StorJ {
         router.get("/list", async (req, res) => {
             try {
                 let list = await this.project.listObjects(this.bucket, null);
-                let result = Object.values(list).map(val => val.key);
-                res.json(result);
+                let result = Object.values(list).map(val => {
+                    return `<li><a href='/get/${val.key}'>${val.key}</a></li>`
+                });
+                res.send(`<html><body><ul>${result}</ul></body></html>`);
             } catch (e) {
                 console.error(e);
                 res.status(500).send();
@@ -157,11 +160,17 @@ export default class StorJ {
             try {
                 let opts = new UplinkNodejs.UploadOptions(0);
                 let ext = req.files.file.mimetype.split('/')[1]
-                let id = this.connector.idForge.datedId() + "." + ext;
-                let upload = await this.project.uploadObject(this.bucket, id, opts);
+                let id = this.connector.idForge.datedId();
+                let fileId = id + "." + ext;
+                let upload = await this.project.uploadObject(this.bucket, fileId, opts);
                 let result = await upload.write(req.files.file.data, req.files.file.size);
                 await upload.commit();
                 let info = await upload.info();
+                await axios.put(this.connector.profile.server+'/media/'+id,{
+                    description:req.body.description,
+                    type:ext,
+                    length:info.system.content_length
+                });
                 res.json({ info: info });
             } catch (e) {
                 console.error(e);
