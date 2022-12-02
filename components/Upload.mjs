@@ -24,6 +24,8 @@ export default class Upload extends Component {
         let formData = new FormData();
         formData.append('description',this.inputDescription.value);
         formData.append('file',this.inputFile.value)
+        formData.append('language',window.navigator.language);
+        formData.append('tz',Intl?Intl.DateTimeFormat().resolvedOptions().timeZone:'');
         await fetch('/put',{
             credentials: "same-origin",
             cache: "no-store",

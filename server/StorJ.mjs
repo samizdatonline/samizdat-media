@@ -169,6 +169,9 @@ export default class StorJ {
                 await axios.put(this.connector.profile.server+'/media/'+id,{
                     description:req.body.description,
                     type:ext,
+                    file:fileId,
+                    language:req.body.language,
+                    tz:req.body.tz,
                     length:info.system.content_length
                 });
                 res.json({ info: info });
@@ -177,6 +180,20 @@ export default class StorJ {
                 res.status(500).send();
             }
         });
+
+        router.get('/search',async (req,res) => {
+            try {
+                let url = this.connector.profile.server + '/media';
+                if (req.query.q && req.query.q !== '') {
+                    url += '?q=' + encodeURIComponent(req.query.q);
+                }
+                let result = await axios.get(url);
+                res.json(result.data);
+            } catch (e) {
+                console.error(e);
+                res.status(500).send();
+            }
+        })
         return router;
     }
 }
