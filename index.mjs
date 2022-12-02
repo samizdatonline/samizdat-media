@@ -10,7 +10,6 @@ import StorJ from './server/StorJ.mjs';
 import path from "path";
 import {fileURLToPath} from "url";
 const root = path.dirname(fileURLToPath(import.meta.url));
-import axios from 'axios';
 
 let main = async function() {
     let app = express();
