@@ -43,7 +43,8 @@ export default class Home extends Component {
             let file = result.file || result._id + '.' + result.type;
 
             let entry = this.div('search-result',this.searchResults);
-            entry.innerHTML = `<div><b>${file}</b></div><div>${result.description}</div><div><i>${result._created}</i></div>`
+            let date = moment(result._created).format("YYYY-MM-DD");
+            entry.innerHTML = `<div><b>${file}</b></div><div>${result.description}</div><div><i>${date}</i></div>`
             entry.addEventListener('click',()=>{
                 this.play(`/get/${file}`);
             })
