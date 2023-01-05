@@ -4,5 +4,29 @@
     margin: var(--spacer);
 }
 input[type=file] {
+    display:none;
     height:30vw;
+}
+.drop-box {
+    display:flex;
+    align-items: center;
+    text-align:center;
+    border:3px dashed var(--page-border);
+    height:20vw;
+    width:80vw;
+    cursor:pointer;
+}
+.drop-box .icon {
+    flex:1 1;
+    font-size:3em;
+    opacity:.5;
+}
+.drop-box .file-profile {
+    flex:1 1;
+    margin:var(--spacer);
+    font-size:0.8em;
+    overflow:hidden;
+}
+.file-name {
+    font-weight:bold;
 }

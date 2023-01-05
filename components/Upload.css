@@ -5,9 +5,10 @@
     align-items: center;
 }
 input,textarea {
-    width:80vw
+    width:80vw;
+    resize:none;
 }
 .Button {
-    margin-top:var(--spacer2);
+    margin:var(--spacer2);
     font-size:1.5em;
 }

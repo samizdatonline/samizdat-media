@@ -12,7 +12,6 @@ export default class Home extends Component {
     }
     async render(element) {
         await super.render(element);
-
         this.searchPanel = this.div('search-panel',this.element);
         this.searchText = this.new(InputText,{name:'search',data:{},hideTitle:true});
         await this.searchText.render(this.searchPanel);
@@ -27,6 +26,7 @@ export default class Home extends Component {
         this.player.setAttribute("controls","true");
         // video.src = "/get/l7etli9qmyiqxrap.mp4"
         this.videoPanel.append(this.player);
+        this.addResponsiveLayout();
         // // ad box
         // this.adBox = this.div('ad-box');
         // this.adBox.innerHTML = await this.adText();
@@ -52,5 +52,25 @@ export default class Home extends Component {
     play(url) {
         this.player.src = url;
         this.player.play();
+    }
+
+    /**
+     * This should be done purely in CSS, but the metric componentry doesn't
+     * properly handle @media declarations
+     */
+    addResponsiveLayout() {
+        updateSize.call(this);
+        window.addEventListener('resize', updateSize.bind(this));
+        function updateSize() {
+            if (window.innerWidth < 450) {
+                this.element.style.flexDirection = "column";
+                this.element.style.alignItems = "flex-end";
+                this.videoPanel.classList.add('vertical');
+            } else {
+                this.element.style.flexDirection = "row";
+                this.element.style.alignItems = "flex-start";
+                this.videoPanel.classList.remove('vertical');
+            }
+        }
     }
 }
