@@ -30,7 +30,7 @@ input,textarea {
     top:0;
     bottom:0;
     left:0;
-    right:40%;
+    right:0;
     background-color:var(--action-color);
     opacity:0.5;
 }
