@@ -1,6 +1,6 @@
 {
   "name": "samizdat-media",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Streaming video",
   "main": "index.mjs",
   "scripts": {
