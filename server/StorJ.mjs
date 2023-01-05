@@ -156,24 +156,42 @@ export default class StorJ {
             }
         });
 
-        router.put("/put", async (req, res) => {
+        router.put("/stage",async (req,res) => {
             try {
-                let opts = new UplinkNodejs.UploadOptions(0);
-                let ext = req.files.file.mimetype.split('/')[1]
+                let ext = req.body.type.split('/')[1]
                 let id = this.connector.idForge.datedId();
                 let fileId = id + "." + ext;
-                let upload = await this.project.uploadObject(this.bucket, fileId, opts);
-                let result = await upload.write(req.files.file.data, req.files.file.size);
-                await upload.commit();
-                let info = await upload.info();
-                await axios.put(this.connector.profile.server+'/media/'+id,{
+                let result = await axios.put(this.connector.profile.server+'/media/'+id,{
                     description:req.body.description,
                     type:ext,
                     file:fileId,
                     language:req.body.language,
                     tz:req.body.tz,
-                    length:info.system.content_length
+                    size:req.body.size,
+                    captured:req.body.captured,
+                    status:"staged"
                 });
+                res.json(result.data);
+            } catch (e) {
+                console.error(e);
+                res.status(500).send();
+            }
+        })
+
+        router.put("/upload/:id", async (req, res) => {
+            try {
+                let result = await axios.get(this.connector.profile.server+'/media/'+req.params.id);
+                let record = result?result.data:null;
+                if (!record || record.status !== 'staged') {
+                    return res.status(404).send('object unknown')
+                }
+                await axios.put(this.connector.profile.server+'/media/'+req.params.id+'/status/uploading');
+                let opts = new UplinkNodejs.UploadOptions(0);
+                let upload = await this.project.uploadObject(this.bucket, record.file, opts);
+                await upload.write(req.files.file.data, req.files.file.size);
+                await upload.commit();
+                let info = await upload.info();
+                await axios.put(this.connector.profile.server+'/media/'+req.params.id+'/status/live');
                 res.json({ info: info });
             } catch (e) {
                 console.error(e);

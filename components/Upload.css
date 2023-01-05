@@ -12,3 +12,25 @@ input,textarea {
     margin:var(--spacer2);
     font-size:1.5em;
 }
+.progress-display {
+    position:relative;
+    width:80vw
+}
+.progress-display .job {
+    position:relative;
+    height:20px;
+    width:100%;
+    margin:var(--spacerhalf) 0;
+    border:1px solid var(--page-border);
+    font-size:0.8em;
+    overflow:hidden;
+}
+.progress-display .job .progress {
+    position:absolute;
+    top:0;
+    bottom:0;
+    left:0;
+    right:40%;
+    background-color:var(--action-color);
+    opacity:0.5;
+}
