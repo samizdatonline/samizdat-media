@@ -9,13 +9,55 @@ import UplinkNodejs from 'uplink-nodejs';
 import fileUpload from 'express-fileupload';
 import express from 'express';
 import fs from 'fs';
+import fsAsync from 'fs/promises';
 import axios from 'axios';
 import { Readable } from 'stream';
+import {StorjService} from "./StorjService.mjs"
+import {spawn} from "child_process"
+
+const CACHE_DIRNAME = new URL('../.cache/', import.meta.url).pathname;
+
+const createPreview = (videoPath, previewPath) => {
+    const ffmpeg = spawn(`"ffmpeg"`, [
+        "-y", "-i", `"${videoPath}"`, "-frames 1", `-q:v 0`, `-vf "scale=320:180:force_original_aspect_ratio=decrease,pad=320:180:(ow-iw)/2:(oh-ih)/2,setsar=1"`, `"${previewPath}"`
+    ], { shell: true })
+
+    let stderr = ''
+    
+    return new Promise(async (resolve, reject) => {
+        ffmpeg.stderr.on('data', (data) => {
+            stderr += data.toString()
+        })
+        ffmpeg.stderr.on('error', (err) => {
+            reject(err)
+        })
+        ffmpeg.on('exit', (code, signal) => {
+            if (code !== 0) {
+                const err = new Error(`ffmpeg exited ${code}\nffmpeg stderr:\n\n${stderr}`)
+                reject(err)
+            }
+            if (stderr.includes('nothing was encoded')) {
+                const err = new Error(`ffmpeg failed to encode file\nffmpeg stderr:\n\n${stderr}`)
+                reject(err)
+            }
+        })
+
+        ffmpeg.on('close', resolve)
+    }).then(async () => {
+        const image = await fsAsync.readFile(previewPath)
+
+        await fsAsync.unlink(videoPath)
+        await fsAsync.unlink(previewPath)
+
+        return image
+    })
+}
 
 export default class StorJ {
     constructor(connector) {
         this.connector = connector;
         this.bucket = "video";
+        this.storjService = new StorjService({bucket: this.bucket})
     }
     static async mint(connector) {
         let sj = new StorJ(connector);
@@ -25,6 +67,12 @@ export default class StorJ {
         );
         // let access = await libUplink.parseAccess(process.env.ACCESS);
         sj.project = await access.openProject();
+
+        await sj.storjService.bootstrap({
+            SATELLITE_URL: connector.profile.STORJ.SATELLITE_URL,
+            APIKEY: connector.profile.STORJ.APIKEY,
+            PASSPHRASE: connector.profile.STORJ.PASSPHRASE,
+        })
         return sj;
     }
     routes() {
@@ -186,11 +234,24 @@ export default class StorJ {
                     return res.status(404).send('object unknown')
                 }
                 await axios.put(this.connector.profile.server+'/media/'+req.params.id+'/status/uploading');
+
+                // Create preview START
+                const {file} = req.files
+                const videoPath = CACHE_DIRNAME+Math.random()+Math.random()
+                const previewPath = videoPath+".jpeg"
+
+                await file.mv(videoPath)
+                const preview = await createPreview(videoPath, previewPath)
+                const preview_size = Buffer.byteLength(preview)
+                await this.storjService.uploadFile(req.params.id+".jpeg", preview, preview_size)
+                // Create preview END
+
                 let opts = new UplinkNodejs.UploadOptions(0);
                 let upload = await this.project.uploadObject(this.bucket, record.file, opts);
-                await upload.write(req.files.file.data, req.files.file.size);
+                await upload.write(file.data, file.size);
                 await upload.commit();
                 let info = await upload.info();
+
                 await axios.put(this.connector.profile.server+'/media/'+req.params.id+'/status/live');
                 res.json({ info: info });
             } catch (e) {
@@ -210,6 +271,31 @@ export default class StorJ {
             } catch (e) {
                 console.error(e);
                 res.status(500).send();
+            }
+        })
+
+        router.get("/preview/:id", async (req, res) => {
+            try {
+                const stream = await this.storjService.downloadFile(req.params.id+".jpeg")
+                res.writeHead(200, {
+                    "Content-Type": "image/jpeg",
+                    "Content-Length": stream.size,
+                })
+
+                try {
+                    while(true) {
+                        const buffer = await stream.download()
+                        if(!buffer) break;
+
+                        await new Promise((resolve, reject) => res.write(buffer, (error) => error ? reject(error) : resolve()))
+                    }
+                } catch(error) {
+                    console.error("Storj download error:", error)
+                }
+                res.end()
+            } catch(error) {
+                console.error("Storj preview error:", error)
+                res.status(500).send()
             }
         })
         return router;
