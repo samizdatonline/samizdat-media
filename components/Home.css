@@ -61,3 +61,19 @@
     width:100%;
     object-fit: scale-down;
 }
+
+.search-result-container {
+    display: flex;
+    align-items: center;
+}
+.video-preview {
+    align-self: stretch;
+    width: 200px;
+    margin-right: 15px;
+    background: #000;
+}
+.video-preview img {
+    width: 200px;
+    height: auto;
+    display: block;
+}
