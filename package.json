@@ -20,9 +20,11 @@
     "dotenv": "^16.0.1",
     "express": "^4.18.1",
     "express-fileupload": "^1.4.0",
+    "ffmpeg-static": "^5.1.0",
     "moment-timezone": "^0.5.34",
     "morgan": "^1.10.0",
     "node-gyp": "^9.1.0",
+    "simple-thumbnail": "^1.6.5",
     "uplink-nodejs": "^1.2.6"
   }
 }

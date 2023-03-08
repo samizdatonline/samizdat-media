@@ -8,13 +8,10 @@ export default class About extends Component {
         await super.render(element);
         this.content = this.div();
         this.content.innerHTML = `
-            In one word you can't divulge much, or maybe you can, but the point here
-            is to express and follow trends without culling through social media.
-            <p>Use <a href="/#Explore">Explore</a> to search trending words across
-            locations, weather, disciplines.</p>
-            <p>This site is driven by the open source <a href="https://metric.im">metric.im</a>
-            platform. You can skip the login to explore the docs.</p>
-            <p><i>There's nearly no data yet, so the charts are dull. Post stuff.</i></p>
+            <p>Samizdat media provides a platform for anonymously sharing video.</p>
+            <p>Video can be posted to one or more channels, like hashtags that help it be found</p>
+            <p>Channels have moderators who are not anonymous. Moderators set the rules of
+             participation in the channel</p>
         `;
     }
 }

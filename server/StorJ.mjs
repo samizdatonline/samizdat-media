@@ -11,6 +11,8 @@ import express from 'express';
 import fs from 'fs';
 import axios from 'axios';
 import { Readable } from 'stream';
+import thumbGen from "simple-thumbnail";
+import ffmpeg from "ffmpeg-static";
 
 export default class StorJ {
     constructor(connector) {
@@ -180,19 +182,43 @@ export default class StorJ {
 
         router.put("/upload/:id", async (req, res) => {
             try {
+                // get the staged object from the admin database
                 let result = await axios.get(this.connector.profile.server+'/media/'+req.params.id);
                 let record = result?result.data:null;
                 if (!record || record.status !== 'staged') {
                     return res.status(404).send('object unknown')
                 }
                 await axios.put(this.connector.profile.server+'/media/'+req.params.id+'/status/uploading');
-                let opts = new UplinkNodejs.UploadOptions(0);
-                let upload = await this.project.uploadObject(this.bucket, record.file, opts);
-                await upload.write(req.files.file.data, req.files.file.size);
-                await upload.commit();
-                let info = await upload.info();
-                await axios.put(this.connector.profile.server+'/media/'+req.params.id+'/status/live');
-                res.json({ info: info });
+                // pull out a thumbnail
+                // let buffer = req.files.file.data;
+                // buffer.name = req.params.id+".png"
+                // const readable = Readable.from(req.files.file.data);
+                // readable._read = () => {}
+                // readable.push(buffer);
+                let readable = fs.createReadStream('/home/msprague/workspace/samizdat-media/test.mp4')
+                let writable = fs.createWriteStream('/home/msprague/workspace/samizdat-media/thumbnail.png')
+
+                await fs.createReadStream('/home/msprague/workspace/samizdat-media/test.mp4',{path: ffmpeg})
+                  .pipe(thumbGen(null, null, '250x?'))
+                  .pipe(fs.createWriteStream('/home/msprague/workspace/samizdat-media/thumbnail.jpg'))
+
+                // await readable.pipe(thumbGen(null, null, '250x?',{path: ffmpeg}))
+                //   .pipe(writable);
+                // res.setHeader('content-type', "image/png");
+                // res.setHeader('content-length', 1000);
+                // img = img.toString('base64')
+                // fs.createWriteStream('/home/msprague/workspace/samizdat-media/thumbnail.png')
+                // let img = await readable.pipe(thumbGen(null,res,'250x?',{path: ffmpeg}));
+                // res.send(img.toString('base64'));
+
+                // // send to storj
+                // let opts = new UplinkNodejs.UploadOptions(0);
+                // let upload = await this.project.uploadObject(this.bucket, record.file, opts);
+                // await upload.write(req.files.file.data, req.files.file.size);
+                // await upload.commit();
+                // let info = await upload.info();
+                // await axios.put(this.connector.profile.server+'/media/'+req.params.id+'/status/live');
+                // res.json({ info: info });
             } catch (e) {
                 console.error(e);
                 res.status(500).send();

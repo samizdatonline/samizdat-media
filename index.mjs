@@ -34,15 +34,6 @@ let main = async function() {
 
     app.get('/v/:video',async (req,res)=>{
         let body = {_origin:{host:req.hostname,ip:req.headers['x-forwarded-for'],ua:req.get('User-Agent')}}
-
-        // body.word = req.params.word;
-        // try {
-        //     await axios.put(`${metricHost}/ping/silent/word`,body,header);
-        //     res.status(203).send();
-        // } catch(e) {
-        //     console.error(e.message);
-        //     res.status(500).json('something went wrong');
-        // }
     })
 
     let server = http.createServer(app);
