@@ -14,11 +14,12 @@ import axios from 'axios';
 import { Readable } from 'stream';
 import {StorjService} from "./StorjService.mjs"
 import {spawn} from "child_process"
+import FFMPEG_PATH from 'ffmpeg-static'
 
 const CACHE_DIRNAME = new URL('../.cache/', import.meta.url).pathname;
 
 const createPreview = (videoPath, previewPath) => {
-    const ffmpeg = spawn(`"ffmpeg"`, [
+    const ffmpeg = spawn(`"${FFMPEG_PATH}"`, [
         "-y", "-i", `"${videoPath}"`, "-frames 1", `-q:v 0`, `-vf "scale=320:180:force_original_aspect_ratio=decrease,pad=320:180:(ow-iw)/2:(oh-ih)/2,setsar=1"`, `"${previewPath}"`
     ], { shell: true })
 

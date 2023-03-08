@@ -10,14 +10,13 @@ import StorJ from './server/StorJ.mjs';
 import path from "path";
 import {fileURLToPath} from "url";
 import fsAsync from 'fs/promises';
+import fs from 'fs';
 
 const CACHE_DIRNAME = new URL('.cache', import.meta.url).pathname;
 const root = path.dirname(fileURLToPath(import.meta.url));
 
 let main = async function() {
-    await fsAsync.rmdir(CACHE_DIRNAME).catch(error => {
-        if(error.code !== "ENOENT") throw error
-    })
+    fs.rmSync(CACHE_DIRNAME, {recursive: true, force: true});
     await fsAsync.mkdir(CACHE_DIRNAME)
 
     let app = express();
