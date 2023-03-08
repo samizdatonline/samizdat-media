@@ -1,3 +1,4 @@
+.cache/*
 .idea
 scratch.html
 node_modules

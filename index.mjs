@@ -9,9 +9,17 @@ import Componentry from '@metric-im/componentry';
 import StorJ from './server/StorJ.mjs';
 import path from "path";
 import {fileURLToPath} from "url";
+import fsAsync from 'fs/promises';
+
+const CACHE_DIRNAME = new URL('.cache', import.meta.url).pathname;
 const root = path.dirname(fileURLToPath(import.meta.url));
 
 let main = async function() {
+    await fsAsync.rmdir(CACHE_DIRNAME).catch(error => {
+        if(error.code !== "ENOENT") throw error
+    })
+    await fsAsync.mkdir(CACHE_DIRNAME)
+
     let app = express();
     app.__dirname = root;
     app.use(morgan('dev'));
