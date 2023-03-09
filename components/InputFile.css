@@ -1,7 +1,6 @@
 . {
     flex:0 0;
     border:1px solid var(--bg-color);
-    margin: var(--spacer);
 }
 input[type=file] {
     display:none;
@@ -13,7 +12,7 @@ input[type=file] {
     text-align:center;
     border:3px dashed var(--page-border);
     height:10vw;
-    width:80vw;
+    width:100%;
     cursor:pointer;
 }
 .drop-box .icon {

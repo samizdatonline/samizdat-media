@@ -38,8 +38,18 @@ export default class Channels extends Component {
     this.viewKey = await this.draw(InputText,
       {name:'viewKey',title:'viewer pass phrase',placeholder:'enter a pass phrase required to view (or leave blank)'},this.section3);
     this.viewKey.element.classList.add('input-greedy');
+    this.verificationStatus = this.div('verification-status',this.properties);
+    this.updateVerification(this.verificationStatus,this.properties);
 
     this.controls = this.div('channel-controls');
+    this.verifyButton = await this.draw(Button,{icon:"man",title:"verify publisher",onClick:this.updateVerification.bind(this)},this.controls);
     this.saveBtn = await this.draw(Button,{name:'save',icon:'save',title:'save'},this.controls);
+  }
+  updateVerification(element) {
+    if (this.props.data.verified) {
+      element.innerHTML = 'verified';
+    } else {
+      element.innerHTML = 'not verified';
+    }
   }
 }

@@ -17,7 +17,6 @@
     flex-direction: column;
     align-items: flex-start;
     padding:var(--spacer);
-    background-color:var(--bg-color-d);
     flex-wrap:wrap;
 }
 .properties-section {
@@ -36,6 +35,12 @@
     width:100%;
 }
 .channel-controls {
+    display:flex;
     margin-top:var(--spacer2);
     align-self: flex-end;
+}
+.verification-status {
+    margin-top:var(--spacer2);
+    flex:0;
+    font-size:1.2em;
 }

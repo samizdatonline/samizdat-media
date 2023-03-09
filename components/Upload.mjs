@@ -18,14 +18,16 @@ export default class Upload extends Component {
 
     async render(element) {
         await super.render(element);
-        this.progressDisplay = this.div('progress-display');
-        this.inputFile = await this.draw(InputFile,{data:{},name:"file",title:"upload file",accept:this.allowedTypes},this.element);
-        this.properties = this.div('media-properties');
+        this.formBody = this.div('form-body');
+        this.progressDisplay = this.div('progress-display',this.formBody);
+        this.inputFile = await this.draw(InputFile,{data:{},name:"file",title:"upload file",accept:this.allowedTypes},this.formBody);
+        this.inputDescription = await this.draw(InputTextArea,{data:{},name:"description",title:"description"},this.formBody);
+        this.properties = this.div('media-properties',this.formBody);
+        this.controls = this.div('media-controls');
         await this.draw(InputChannel,{name:'channel',data:{},noCreate:true},this.properties)
         await this.draw(InputWallet,{name:'wallet'},this.properties);
-        await this.draw(InputText,{name:'language',data:{language:this.browserLanguage},options:this.languages},this.properties)
-        this.inputDescription = await this.draw(InputTextArea,{data:{},name:"description",title:"description"},this.element);
-        this.uploadButton = await this.draw(Button,{icon:"upload",title:"upload",onClick:this.startJob.bind(this)},this.element);
+        await this.draw(InputText,{name:'language',data:{language:this.browserLanguage},options:this.languages},this.properties);
+        this.uploadButton = await this.draw(Button,{icon:"upload",title:"upload",onClick:this.startJob.bind(this)},this.controls);
     }
 
     static jobs = [];
