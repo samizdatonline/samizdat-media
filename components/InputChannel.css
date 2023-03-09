@@ -1,0 +1,23 @@
+. {
+}
+.channel-entry {
+    display:flex;
+    flex-direction: row;
+    width:calc(100% - var(--spacer));
+}
+.channel-type {
+    flex:0;
+}
+.channel-name {
+    flex:1;
+}
+.channel-name input {
+    width:100%;
+}
+select {
+    border-radius:3px 0 0 3px;
+    border-right:0;
+}
+input {
+    border-radius:0 3px 3px 0;
+}

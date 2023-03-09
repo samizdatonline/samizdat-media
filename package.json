@@ -11,7 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "@metric-im/common-mixin": "^1.2.0",
-    "@metric-im/componentry": "^1.2.2",
+    "@metric-im/componentry": "^1.2.4",
     "@types/node": "^18.7.13",
     "aws-sdk": "^2.1202.0",
     "axios": "^0.27.2",
