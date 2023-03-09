@@ -16,7 +16,8 @@
     flex:1;
     flex-direction: column;
     align-items: flex-start;
-    padding:var(--spacer);
+    margin-top:var(--spacer2);
+    padding:var(--spacer) 0;
     flex-wrap:wrap;
 }
 .properties-section {
