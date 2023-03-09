@@ -3,6 +3,7 @@ import InputFile from "./InputFile.mjs";
 import {InputText,InputTextArea} from "./InputText.mjs";
 import {Button} from "./Button.mjs";
 import InputChannel from "./InputChannel.mjs";
+import InputWallet from "./InputWallet.mjs";
 
 export default class Upload extends Component {
     constructor(props) {
@@ -21,6 +22,7 @@ export default class Upload extends Component {
         this.inputFile = await this.draw(InputFile,{data:{},name:"file",title:"upload file",accept:this.allowedTypes},this.element);
         this.properties = this.div('media-properties');
         await this.draw(InputChannel,{name:'channel',data:{},noCreate:true},this.properties)
+        await this.draw(InputWallet,{name:'wallet'},this.properties);
         await this.draw(InputText,{name:'language',data:{language:this.browserLanguage},options:this.languages},this.properties)
         this.inputDescription = await this.draw(InputTextArea,{data:{},name:"description",title:"description"},this.element);
         this.uploadButton = await this.draw(Button,{icon:"upload",title:"upload",onClick:this.startJob.bind(this)},this.element);
