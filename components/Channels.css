@@ -18,13 +18,13 @@
     align-items: flex-start;
     margin-top:var(--spacer2);
     padding:var(--spacer) 0;
-    flex-wrap:wrap;
 }
 .properties-section {
     flex:0;
     width:100%;
     display:flex;
     margin-bottom:var(--spacer2);
+    flex-wrap:wrap;
 }
 .properties-section > * {
     margin-right:var(--spacer);
