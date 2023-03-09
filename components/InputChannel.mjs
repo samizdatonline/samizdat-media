@@ -39,7 +39,7 @@ export default class InputChannel extends Component {
     } else if (this.searchType.value === 'find') {
      input.placeholder = 'Find a channel by name'
     } else if (this.searchType.value === 'retrieve') {
-      input.placeholder = 'Enter a channel key'
+      input.placeholder = 'Enter a channel pass phrase'
     }
   }
 }

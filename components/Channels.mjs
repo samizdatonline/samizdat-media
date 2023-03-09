@@ -33,10 +33,10 @@ export default class Channels extends Component {
     this.active = await this.draw(InputToggle,
       {name:'active',data:this.data},this.section2);
     this.editKey = await this.draw(InputText,
-      {name:'editKey',title:'editors pass phrase',placeholder:'enter a pass phrase to allow editing/removal'},this.section3);
+      {name:'editKey',title:'pass phrase to edit (required)',placeholder:'enter a pass phrase to allow editing/removal'},this.section3);
     this.editKey.element.classList.add('input-greedy');
     this.viewKey = await this.draw(InputText,
-      {name:'viewKey',title:'viewer pass phrase',placeholder:'enter a pass phrase required to view (or leave blank)'},this.section3);
+      {name:'viewKey',title:'pass phrase to view (optional)',placeholder:'enter a pass phrase required to view (or leave blank)'},this.section3);
     this.viewKey.element.classList.add('input-greedy');
     this.verificationStatus = this.div('verification-status',this.properties);
     this.updateVerification(this.verificationStatus,this.properties);
