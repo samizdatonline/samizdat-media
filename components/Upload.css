@@ -4,9 +4,18 @@
     flex-direction: column;
     align-items: center;
 }
-input,textarea {
+textarea {
     width:80vw;
     resize:none;
+}
+.media-properties {
+    display:flex;
+    width:80vw;
+    margin-bottom:var(--spacer);
+    padding:0;
+}
+.media-properties > * {
+    margin-right:var(--spacer);
 }
 .Button {
     margin:var(--spacer2);

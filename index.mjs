@@ -6,6 +6,7 @@ import cors from 'cors';
 import CommonMixin from '@metric-im/common-mixin';
 import Profile from './profile.mjs';
 import Componentry from '@metric-im/componentry';
+// import Componentry from '../metric-im/componentry/index.mjs';
 import StorJ from './server/StorJ.mjs';
 import path from "path";
 import {fileURLToPath} from "url";

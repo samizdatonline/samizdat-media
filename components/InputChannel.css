@@ -1,0 +1,16 @@
+. {
+}
+.channel-entry {
+    display:flex;
+    flex-direction: row;
+    width:100%;
+}
+.channel-type {
+    flex:0;
+}
+.channel-name {
+    flex:1;
+}
+.channel-name input {
+    width:100%;
+}

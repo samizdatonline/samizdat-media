@@ -31,6 +31,7 @@ export default class Main extends Component {
         await this.new(PageMenu,{context:this.context,menu:[
             {title:'',target:'/#Home',icon:'home'},
             {title:'',target:'/#Upload',icon:'upload'},
+            {title:'',target:'/#Channels',icon:'flag'},
             {title:'',target:'/#About',icon:'help'}
         ]}).render(this.element);
         this.popup = this.new(Popup,{context:this.context});

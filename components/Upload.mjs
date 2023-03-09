@@ -2,6 +2,7 @@ import Component from "./Component.mjs";
 import InputFile from "./InputFile.mjs";
 import {InputText,InputTextArea} from "./InputText.mjs";
 import {Button} from "./Button.mjs";
+import InputChannel from "./InputChannel.mjs";
 
 export default class Upload extends Component {
     constructor(props) {
@@ -10,17 +11,19 @@ export default class Upload extends Component {
         const videoExtensions = ['.m4v', '.mp4', '.webm', '.mov', '.mkv'];
         const audioExtensions = ['.mp3', '.wav', '.ogg'];
         this.allowedTypes = videoExtensions;
+        this.languages = ['', 'EN', 'UA', 'RU', 'BY', 'FA'];
+        this.browserLanguage = window.navigator.language.split('-')[0].toUpperCase();
     }
 
     async render(element) {
         await super.render(element);
         this.progressDisplay = this.div('progress-display');
-        this.inputFile = this.new(InputFile,{data:{},name:"file",title:"upload file",accept:this.allowedTypes})
-        await this.inputFile.render(this.element);
-        this.inputDescription = this.new(InputTextArea,{data:{},name:"description",title:"description"})
-        await this.inputDescription.render(this.element);
-        this.uploadButton = this.new(Button,{icon:"upload",title:"upload",onClick:this.startJob.bind(this)});
-        await this.uploadButton.render(this.element);
+        this.inputFile = await this.draw(InputFile,{data:{},name:"file",title:"upload file",accept:this.allowedTypes},this.element);
+        this.properties = this.div('media-properties');
+        await this.draw(InputChannel,{name:'channel',data:{},noCreate:true},this.properties)
+        await this.draw(InputText,{name:'language',data:{language:this.browserLanguage},options:this.languages},this.properties)
+        this.inputDescription = await this.draw(InputTextArea,{data:{},name:"description",title:"description"},this.element);
+        this.uploadButton = await this.draw(Button,{icon:"upload",title:"upload",onClick:this.startJob.bind(this)},this.element);
     }
 
     static jobs = [];
