@@ -40,10 +40,6 @@ let main = async function() {
     let componentry = new Componentry(app,await Profile());
     await componentry.init(CommonMixin,StorJ,ApplicationModule);
 
-    app.get('/v/:video',async (req,res)=>{
-        let body = {_origin:{host:req.hostname,ip:req.headers['x-forwarded-for'],ua:req.get('User-Agent')}}
-    })
-
     let server = http.createServer(app);
     server.listen(process.env.PORT || 3900);
     server.on('error', console.error);

@@ -1,14 +1,16 @@
 . {
     position:absolute;
-    left:4vw;
-    right:4vw;
-    top:4vh;
-    bottom:2vh;
+    left:0;
+    right:0;
+    top:0;
+    bottom:0;
     display:flex;
     flex-direction: column;
 }
 .form-body {
     flex:1;
+    overflow:auto;
+    padding:2vh 2vw;
 }
 .form-body > * {
     margin-bottom:var(--spacer2);
@@ -38,6 +40,7 @@ textarea {
     margin-top:var(--spacer2);
     align-self: flex-end;
     flex-direction: column;
+    padding:2vh 2vw;
 }
 .progress-display {
     position:relative;

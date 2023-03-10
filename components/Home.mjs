@@ -24,16 +24,9 @@ export default class Home extends Component {
         this.player.setAttribute('height','100%');
         this.player.setAttribute('width','auto');
         this.player.setAttribute("controls","true");
-        // video.src = "/get/l7etli9qmyiqxrap.mp4"
         this.videoPanel.append(this.player);
         this.addResponsiveLayout();
-        // // ad box
-        // this.adBox = this.div('ad-box');
-        // this.adBox.innerHTML = await this.adText();
         await this.updateResults();
-    }
-    async adText() {
-        return "text ad with samizdat link"
     }
     async updateResults() {
         let results = await fetch('/search?q='+this.searchText.value);

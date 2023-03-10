@@ -1,23 +1,24 @@
 . {
     position:absolute;
-    left:2vw;
-    right:2vw;
-    top:2vh;
-    bottom:2vh;
+    left:0;
+    right:0;
+    top:0;
+    bottom:0;
     display:flex;
     flex-direction: column;
 }
 .channel-selector {
     flex:0;
     font-size:1.5em;
+    padding:2vh 2vw;
 }
 .channel-properties {
     display:flex;
     flex:1;
     flex-direction: column;
     align-items: flex-start;
-    margin-top:var(--spacer2);
-    padding:var(--spacer) 0;
+    padding:2vh 2vw;
+    overflow:auto;
 }
 .properties-section {
     flex:0;
@@ -37,11 +38,16 @@
 }
 .channel-controls {
     display:flex;
-    margin-top:var(--spacer2);
     align-self: flex-end;
+    margin:2vh;
 }
 .verification-status {
     margin-top:var(--spacer2);
     flex:0;
     font-size:1.2em;
+}
+@media (max-width: 600px) {
+    .channel-selector {
+        font-size:1.1em !important;
+    }
 }

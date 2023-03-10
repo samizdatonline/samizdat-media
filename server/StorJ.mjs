@@ -92,47 +92,6 @@ export default class StorJ {
             }
         });
         /**
-         * This is test code that streams an mp4 from the server disk
-         */
-        router.get("/fileget/:id", async (req, res) => {
-            try {
-                const range = req.headers.range;
-                if (!range) {
-                    res.status(400).send("Requires Range header");
-                }
-
-                // get video stats (about 61MB)
-                const videoPath = "test.mp4";
-                const videoSize = fs.statSync("test.mp4").size;
-
-                // Parse Range
-                const CHUNK_SIZE = 10 ** 6; // 1MB
-                const start = Number(range.replace(/\D/g, ""));
-                const end = Math.min(start + CHUNK_SIZE, videoSize - 1);
-
-                // Create headers
-                const contentLength = end - start + 1;
-                const headers = {
-                    "Content-Range": `bytes ${start}-${end}/${videoSize}`,
-                    "Accept-Ranges": "bytes",
-                    "Content-Length": contentLength,
-                    "Content-Type": "video/mp4",
-                };
-
-                // HTTP Status 206 for Partial Content
-                res.writeHead(206, headers);
-
-                // create video read stream for this particular chunk
-                const videoStream = fs.createReadStream(videoPath, { start, end });
-
-                // Stream the video chunk to the client
-                videoStream.pipe(res);
-            } catch (e) {
-                console.error(e);
-                res.status(500).send();
-            }
-        });
-        /**
          * This is intended to stream a file from the storj network to the browser as
          * it is being downloaded. But it doesn't work.
          */
