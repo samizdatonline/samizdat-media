@@ -8,9 +8,9 @@ import InputWallet from "./InputWallet.mjs";
 export default class Upload extends Component {
     constructor(props) {
         super(props);
-        const imageExtensions = ['.bmp', '.svg', '.jpg', '.jpeg', '.png', '.ico', '.gif'];
-        const videoExtensions = ['.m4v', '.mp4', '.webm', '.mov', '.mkv'];
-        const audioExtensions = ['.mp3', '.wav', '.ogg'];
+        const imageExtensions = ['image/bmp', 'image/svg', 'image/jpg', 'image/jpeg', 'image/png', 'image/gif'];
+        const videoExtensions = ['video/m4v', 'video/mp4', 'video/webm', 'video/mov', 'video/mkv'];
+        const audioExtensions = ['audio/mp3', 'audio/wav', 'audio/ogg'];
         this.allowedTypes = videoExtensions;
         this.languages = ['', 'EN', 'UA', 'RU', 'BY', 'FA'];
         this.browserLanguage = window.navigator.language.split('-')[0].toUpperCase();
@@ -20,7 +20,7 @@ export default class Upload extends Component {
         await super.render(element);
         this.formBody = this.div('form-body');
         this.progressDisplay = this.div('progress-display',this.formBody);
-        this.inputFile = await this.draw(InputFile,{data:{},name:"file",title:"upload file",accept:this.allowedTypes},this.formBody);
+        this.inputFile = await this.draw(InputFile,{data:{},name:"file",title:"upload file",accept:"video/*"},this.formBody);
         this.inputDescription = await this.draw(InputTextArea,{data:{},name:"description",title:"description"},this.formBody);
         this.properties = this.div('media-properties',this.formBody);
         this.controls = this.div('media-controls');
