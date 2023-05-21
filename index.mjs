@@ -7,7 +7,9 @@ import CommonMixin from '@metric-im/common-mixin';
 import Profile from './profile.mjs';
 import Componentry from '@metric-im/componentry';
 // import Componentry from '../metric-im/componentry/index.mjs';
-import StorJ from './server/StorJ.mjs';
+import MediaService from './server/MediaService.mjs';
+import SearchService from './server/SearchService.mjs';
+import ChannelService from './server/ChannelService.mjs';
 import path from "path";
 import {fileURLToPath} from "url";
 import fsAsync from 'fs/promises';
@@ -38,7 +40,7 @@ let main = async function() {
     app.use('/',express.static(root+"/site"));
     // add component server
     let componentry = new Componentry(app,await Profile());
-    await componentry.init(CommonMixin,StorJ,ApplicationModule);
+    await componentry.init(CommonMixin,MediaService,ChannelService,SearchService,ApplicationModule);
 
     let server = http.createServer(app);
     server.listen(process.env.PORT || 3900);

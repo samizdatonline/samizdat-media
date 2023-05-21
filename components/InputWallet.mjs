@@ -1,17 +1,15 @@
 import Component from './Component.mjs';
 import {InputText} from './InputText.mjs';
 
-export default class InputWallet extends Component {
+export default class InputWallet extends InputText {
   constructor(props) {
     super(props);
   }
   async render(element) {
+    if (!this.props.title) this.props.title = 'wallet address (btc/eth/rvt)';
+    if (!this.props.placeholder) this.props.placeholder = 'Enter wallet address'
     await super.render(element);
-    this.wallet = await this.draw(InputText,
-      {name:'wallet',title:this.props.title||'wallet address (btc/eth/rvt)',
-        placeholder:this.props.placeholder||'Enter wallet address',hideTitle:this.props.hideTitle},this.element);
-    this.wallet.element.classList.add('wallet-address');
-    this.wallet.element.addEventListener('change',this.testAddress.bind(this));
+    this.element.addEventListener('change',this.testAddress.bind(this));
   }
   testAddress() {
 

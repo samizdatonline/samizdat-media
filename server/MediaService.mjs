@@ -54,14 +54,14 @@ const createPreview = (videoPath, previewPath) => {
     })
 }
 
-export default class StorJ {
+export default class MediaService {
     constructor(connector) {
         this.connector = connector;
         this.bucket = "video";
         this.storjService = new StorjService({bucket: this.bucket})
     }
     static async mint(connector) {
-        let sj = new StorJ(connector);
+        let sj = new MediaService(connector);
         let libUplink = new UplinkNodejs.Uplink();
         let access = await libUplink.requestAccessWithPassphrase(
           connector.profile.STORJ.SATELLITE_URL, connector.profile.STORJ.APIKEY, connector.profile.STORJ.PASSPHRASE
@@ -79,11 +79,11 @@ export default class StorJ {
     routes() {
         let router = express.Router();
         router.use(fileUpload({ limit: 200 * 1024 * 1024 }));
-        router.get("/list", async (req, res) => {
+        router.get("/media/list", async (req, res) => {
             try {
                 let list = await this.project.listObjects(this.bucket, null);
                 let result = Object.values(list).map(val => {
-                    return `<li><a href='/get/${val.key}'>${val.key}</a></li>`
+                    return `<li><a href='/media/get/${val.key}'>${val.key}</a></li>`
                 });
                 res.send(`<html><body><ul>${result}</ul></body></html>`);
             } catch (e) {
@@ -95,7 +95,7 @@ export default class StorJ {
          * This is intended to stream a file from the storj network to the browser as
          * it is being downloaded. But it doesn't work.
          */
-        router.get("/get/:id", async (req, res) => {
+        router.get("/media/get/:id", async (req, res) => {
             try {
                 let range = req.headers.range;
 
@@ -164,7 +164,7 @@ export default class StorJ {
             }
         });
 
-        router.put("/stage",async (req,res) => {
+        router.put("/media/stage",async (req,res) => {
             try {
                 let ext = req.body.type.split('/')[1]
                 let id = this.connector.idForge.datedId();
@@ -186,7 +186,7 @@ export default class StorJ {
             }
         })
 
-        router.put("/upload/:id", async (req, res) => {
+        router.put("/media/upload/:id", async (req, res) => {
             try {
                 // get the staged object from the admin database
                 let result = await axios.get(this.connector.profile.server+'/media/'+req.params.id);
@@ -221,21 +221,7 @@ export default class StorJ {
             }
         });
 
-        router.get('/search',async (req,res) => {
-            try {
-                let url = this.connector.profile.server + '/media';
-                if (req.query.q && req.query.q !== '') {
-                    url += '?q=' + encodeURIComponent(req.query.q);
-                }
-                let result = await axios.get(url);
-                res.json(result.data);
-            } catch (e) {
-                console.error(e);
-                res.status(500).send();
-            }
-        })
-
-        router.get("/preview/:id", async (req, res) => {
+        router.get("/media/preview/:id", async (req, res) => {
             try {
                 const stream = await this.storjService.downloadFile(req.params.id+".jpeg")
                 res.writeHead(200, {

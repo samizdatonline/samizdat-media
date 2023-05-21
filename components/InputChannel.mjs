@@ -18,7 +18,7 @@ export default class InputChannel extends Component {
     if (!this.props.noRetrieve) options.push('retrieve');
     this.entry = this.div('channel-entry');
     this.searchType = await this.draw(InputSelect,
-      {name:'type',data:{},options:options,hideTitle:true},this.entry);
+      {name:'type',data:{type:'create'},options:options,hideTitle:true},this.entry);
     this.searchType.element.classList.add('channel-type');
     if (options.length === 1) {
       this.searchType.element.style.display = 'none';
@@ -28,6 +28,12 @@ export default class InputChannel extends Component {
     this.searchInput.element.classList.add('channel-name');
     this.setPlaceholder();
     this.searchType.element.addEventListener('change',this.selectType.bind(this));
+    this.searchInput.element.addEventListener('input',async e=>{
+      this.props.data[this.props.name] = this.searchInput.value;
+      await this.announceUpdate(this.props.name);
+      if (this.value !== this.originalValue) this.lock.add('exit');
+      else this.lock.clear('exit');
+    });
   }
   async selectType() {
     this.setPlaceholder();
@@ -41,5 +47,8 @@ export default class InputChannel extends Component {
     } else if (this.searchType.value === 'retrieve') {
       input.placeholder = 'Enter a channel pass phrase'
     }
+  }
+  get value() {
+    return {input:this.searchInput.value,type:this.searchType.value};
   }
 }

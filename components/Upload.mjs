@@ -8,10 +8,6 @@ import InputWallet from "./InputWallet.mjs";
 export default class Upload extends Component {
     constructor(props) {
         super(props);
-        const imageExtensions = ['image/bmp', 'image/svg', 'image/jpg', 'image/jpeg', 'image/png', 'image/gif'];
-        const videoExtensions = ['video/m4v', 'video/mp4', 'video/webm', 'video/mov', 'video/mkv'];
-        const audioExtensions = ['audio/mp3', 'audio/wav', 'audio/ogg'];
-        this.allowedTypes = videoExtensions;
         this.languages = ['', 'EN', 'UA', 'RU', 'BY', 'FA'];
         this.browserLanguage = window.navigator.language.split('-')[0].toUpperCase();
     }
@@ -97,7 +93,7 @@ class Job {
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(body)
         };
-        let response = await fetch('/stage', options);
+        let response = await fetch('/media/stage', options);
         let result = await response.json();
         if (response.ok) {
             this.status = Job.UPLOAD;
@@ -118,7 +114,7 @@ class Job {
             xhr.upload.onprogress = (e) => {
                 this.progressBar.style.left = ((e.loaded / e.total) * 100)+"%";
             };
-            xhr.open("PUT", "/upload/" + stageResult._id);
+            xhr.open("PUT", "/media/upload/" + stageResult._id);
             xhr.send(formData);
             xhr.onload = (e) => {
                 this.status = Job.SUCCESS;

@@ -13,7 +13,7 @@ export default class Home extends Component {
     async render(element) {
         await super.render(element);
         this.searchPanel = this.div('search-panel',this.element);
-        this.searchText = this.new(InputText,{name:'search',data:{},hideTitle:true});
+        this.searchText = this.new(InputText,{name:'search',data:{},hideTitle:true,placeholder:"Search for something"});
         await this.searchText.render(this.searchPanel);
         this.searchResults = this.div('results',this.searchPanel);
         this.searchText.element.addEventListener('input',this.updateResults.bind(this));
@@ -36,18 +36,18 @@ export default class Home extends Component {
             let file = result.file || result._id + '.' + result.type;
 
             let entry = this.div('search-result',this.searchResults);
-            let date = moment(result._created).format("YYYY-MM-DD");
+            let date = moment(result.captured).format("YYYY-MM-DD");
             entry.innerHTML = `<div class="search-result-container">
                 <div class="video-preview">
-                    <img src="/preview/${result._id}" />
+                    <img src="/media/preview/${result._id}" />
                 </div>
                 <div>
-                    <div><b>${file}</b></div><div>${result.description}</div>
+                    <div>${result.description || 'no description'}</div>
                     <div><i>${date}</i></div>
                 </div>
             </div>`
             entry.addEventListener('click',()=>{
-                this.play(`/get/${file}`);
+                this.play(`/media/get/${file}`);
             })
         }
     }
