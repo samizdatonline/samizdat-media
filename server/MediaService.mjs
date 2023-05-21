@@ -19,8 +19,11 @@ import FFMPEG_PATH from 'ffmpeg-static'
 const CACHE_DIRNAME = new URL('../.cache/', import.meta.url).pathname;
 
 const createPreview = (videoPath, previewPath) => {
+    const size_w = 320
+    const size_h = 320
+
     const ffmpeg = spawn(`"${FFMPEG_PATH}"`, [
-        "-y", "-i", `"${videoPath}"`, "-frames 1", `-q:v 0`, `-vf "scale=320:180:force_original_aspect_ratio=decrease,pad=320:180:(ow-iw)/2:(oh-ih)/2,setsar=1"`, `"${previewPath}"`
+        "-y", "-i", `"${videoPath}"`, "-frames 1", `-q:v 0`, `-vf "scale=${size_w}:${size_h}:force_original_aspect_ratio=decrease,pad=${size_w}:${size_h}:(ow-iw)/2:(oh-ih)/2,setsar=1"`, `"${previewPath}"`
     ], { shell: true })
 
     let stderr = ''
@@ -91,76 +94,78 @@ export default class MediaService {
                 res.status(500).send();
             }
         });
+
+        const calcRange = (rangeHeader, fileSize) => {
+            let offset = 0
+            let length = -1
+            let lastByte = fileSize-1
+
+            // There can be several ranges, separated by ","
+            const rexp = rangeHeader.match(/^bytes=([0-9]{0,})-([0-9]{0,})$/)
+            if(!rexp) throw new Error("Invalid range: "+String(rangeHeader))
+
+            let start = rexp[1]
+            if(start) {
+                start = parseInt(start, 10)
+                if(start > fileSize) start = lastByte
+            }
+            // let end = rexp[2]
+            // if(end) {
+            //     end = parseInt(start, 10)
+            //     if(start && start > end) end = start
+            //     if(end > fileSize) end = lastByte
+            // }
+
+            if(start) {
+                offset = start
+                length = fileSize-offset
+                // if(end) length = fileSize-offset-(end-start)
+            }
+            // else if(end) {
+            //     offset = fileSize-end
+            //     length = fileSize-offset
+            // }
+
+            return [offset, length]
+        }
+
         /**
          * This is intended to stream a file from the storj network to the browser as
          * it is being downloaded. But it doesn't work.
          */
         router.get("/media/get/:id", async (req, res) => {
             try {
-                let range = req.headers.range;
+                const fileSize = await this.storjService.getFileSize(req.params.id)
 
-                let start = 0;
-                let end = -1;
-                let opts = new UplinkNodejs.DownloadOptions(start, end);
-                console.log(range)
-                if (range) {
-                    let [start, end] = range.replace(/bytes=/, "").split("-");
-                    start = parseInt(start, 10);
-                    end = end ? parseInt(end, 10) : -1
-                    opts.offset = start;
-                    opts.length = end - start;
+                let range = [0, fileSize]
+                if(rangeHeader) range = calcRange(rangeHeader, fileSize)
+
+                const stream = await this.storjService.downloadFile(req.params.id, 8000, ...range)
+
+                let status = 206
+                if(stream.offset === 0 && stream.size === fileSize) status = 200
+
+                res.writeHead(status, {
+                    "content-type": "video/mp4",
+                    "content-length": stream.size,
+                    "content-range": "bytes "+stream.offset+"-"+(stream.offset+stream.size-1)+"/"+fileSize,
+                    "accept-ranges": "bytes",
+                })
+
+                try {
+                    while(true) {
+                        const buffer = await stream.download()
+                        if(!buffer) break;
+
+                        await new Promise((resolve, reject) => res.write(buffer, (error) => error ? reject(error) : resolve()))
+                    }
+                } catch(error) {
+                    console.error("Storj download error:", error)
                 }
-                if (start == 0 && end == -1) {
-                    range = null;
-                }
-
-                let download = await this.project.downloadObject(this.bucket, req.params.id, opts);
-                let info = await download.info();
-                let objectSize = info.system.content_length;
-                const BUFFER_SIZE = 8000;
-
-
-                if (range) {
-                    const headers = {
-                        "Content-Range": `bytes ${start}-${end}/${objectSize}`,
-                        "Accept-Ranges": "bytes",
-                        "Content-Length": opts.length,
-                        "Content-Type": "video/mp4",
-                    };
-                    console.log(headers);
-                    res.writeHead(206, headers);
-                } else {
-                    const headers = {
-                        "Content-Length": objectSize,
-                        "Content-Type": "video/mp4",
-                    };
-                    console.log(headers);
-                    res.writeHead(200, headers);
-                }
-
-                let loop = true;
-                let totalRead = 0;
-                while (loop) {
-                    // Reading data from storj V3 network
-                    let buffer = Buffer.alloc(BUFFER_SIZE);
-                    await download.read(buffer, buffer.length
-                    ).then(async (bytesread) => {
-                        await res.write(buffer.subarray(0, bytesread.bytes_read))
-                        totalRead += bytesread.bytes_read;
-                        if (totalRead >= objectSize) {
-                            loop = false;
-                        }
-                    }).catch((err) => {
-                        console.log("Failed to read data from storj V3 network ");
-                        console.log(err);
-                        loop = false;
-                    });
-                }
-                console.log("totalRead " + totalRead);
-
-            } catch (e) {
-                console.error(e);
-                res.status(500).send();
+                res.end()
+            } catch(error) {
+                console.error("Storj preview error:", error)
+                res.status(500).send()
             }
         });
 
@@ -207,14 +212,11 @@ export default class MediaService {
                 await this.storjService.uploadFile(req.params.id+".jpeg", preview, preview_size)
                 // Create preview END
 
-                let opts = new UplinkNodejs.UploadOptions(0);
-                let upload = await this.project.uploadObject(this.bucket, record.file, opts);
-                await upload.write(file.data, file.size);
-                await upload.commit();
-                let info = await upload.info();
-
+                // Upload video
+                await this.storjService.uploadFile(record.file, file.data, file.size)
                 await axios.put(this.connector.profile.server+'/media/'+req.params.id+'/status/live');
-                res.json({ info: info });
+
+                res.json({ ok: true });
             } catch (e) {
                 console.error(e);
                 res.status(500).send();
@@ -225,8 +227,8 @@ export default class MediaService {
             try {
                 const stream = await this.storjService.downloadFile(req.params.id+".jpeg")
                 res.writeHead(200, {
-                    "Content-Type": "image/jpeg",
-                    "Content-Length": stream.size,
+                    "content-type": "image/jpeg",
+                    "content-length": stream.size,
                 })
 
                 try {
