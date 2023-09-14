@@ -11,8 +11,8 @@ export default class About extends Component {
             <h3>What is this?</h3>
             <p><b>Samizdat Media</b> provides a platform for anonymously sharing video anywhere in the world.</p>
             <p>The system employs a global distributed network for storage (provided by <a href="storj.io">storj.io</a>
-            as well as an optional revenue sharing model enabled through the blockchain.
-            <p>There are no accounts. No cookies. And SamizdatOnline's network of scrambling servers allow
+            as well as an optional revenue sharing model enabled through the blockchain.)
+            <p>There are no accounts. No cookies. No identity Our network of scrambling servers allow
             people under censorship to participate.</p>
 
             <h3>Isn't this dangerous?</h3>
@@ -27,15 +27,15 @@ export default class About extends Component {
             <p>There are three constructs which collaborate to deliver Samizdat Media</p>
 
             <h4>People have no identity. Objects have identity</h4>
-            <p>Users don't log in to edit their stuff. They find their stuff and enter the pass
-            phrase provided when the video was uploaded. The user is anonymous. Their device is
+            <p>Users don't log in to edit their stuff. They find their stuff and prove right to ownership
+            based on credentials, such as a passphrase provided on upload. The user is anonymous. Their device is
             anonymous, but they can still prove the right to update their content.</p>
 
             <h4>Moderation is delegated to a micro network of publishers</h4>
-            <p>The need to devise anonymity for posters led us to the concept of sponsors.
+            <p>The need to devise anonymity for posters led us to a sponsors network.
             No video is uploaded without identifying a <b>channel</b>. The channel owner takes
             responsibility for moderating the content, and further selects the business model.</p>
-            <p>Paid, ad supported or enabled through charity the publisher chooses how to
+            <p>Paid, ad supported or enabled through charity, the publisher chooses how to
             support the bandwidth of their channel and help contributors share in any revenue.</p>
             <p>Delegating responsibility allows those with more rights to enable participation for
             those without rights. Channel publishers cannot be anonymous. A publisher can stand up a tiny
@@ -44,11 +44,11 @@ export default class About extends Component {
             <p>Publishers provide an email when posting a channel and confirm a legal identity.
             Various options give them control over what is posted in their name.</p>
             
-            <h4>Crypto allows objects to participate in an economy</h4>
-            <p>Blockchain currencies have been much derided, but provide a critical mechanism
+            <h4>Crypto allows objects to participate in a worldwide economy</h4>
+            <p>Blockchain currencies have been much derided due to a few bad actors, but provide a critical mechanism
             to establish global micro economies. There is no intent to supplant national
-            banking structures, however, one can't send dollars to a protestor whose video
-            went viral</p>
+            banking structures, however, one can't send a dollar to a protestor whose video
+            went viral by any other means.</p>
             <p>Every channel has a wallet address, BTC, ETH or ERC20 tokens. This wallet pays
             the channel network bill.</p>
             <p>Every upload may be accompanied by a wallet address. If the video generates
